@@ -1,2 +1,2 @@
-# asynchronous-comunicating-agents
-This project establishes communication between components using message queues, supporting various message formats.
+# asynchronous-communicating-agents
+This is a Spring Boot application for asynchronous processing of messages, supporting various  types of messages.
