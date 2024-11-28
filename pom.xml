@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.sadramesbah</groupId>
-	<artifactId>asynchronous-comunicating-agents</artifactId>
+	<artifactId>asynchronous-communicating-agents</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>Asynchronous Communicating Agents</name>
 	<description>This is a Spring Boot application for asynchronous processing of messages, supporting various  types of messages</description>
