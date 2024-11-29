@@ -2,33 +2,33 @@ messages:
 
   xml:
     fields:
-      - name: "field1"
+      - name: "xmlField1"
         type: "String"
         length: 10
         required: true
-      - name: "field2"
+      - name: "xmlField2"
         type: "Integer"
         length: 5
         required: false
 
   soap:
     fields:
-      - name: "field1"
+      - name: "soapField1"
         type: "String"
         length: 10
         required: true
-      - name: "field2"
+      - name: "soapField2"
         type: "Integer"
         length: 5
         required: false
 
   json:
     fields:
-      - name: "field1"
+      - name: "jsonField1"
         type: "String"
         length: 10
         required: true
-      - name: "field2"
+      - name: "jsonField2"
         type: "Integer"
         length: 5
         required: false
