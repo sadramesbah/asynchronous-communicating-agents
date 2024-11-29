@@ -1,0 +1,34 @@
+messages:
+
+  xml:
+    fields:
+      - name: "field1"
+        type: "String"
+        length: 10
+        required: true
+      - name: "field2"
+        type: "Integer"
+        length: 5
+        required: false
+
+  soap:
+    fields:
+      - name: "field1"
+        type: "String"
+        length: 10
+        required: true
+      - name: "field2"
+        type: "Integer"
+        length: 5
+        required: false
+
+  json:
+    fields:
+      - name: "field1"
+        type: "String"
+        length: 10
+        required: true
+      - name: "field2"
+        type: "Integer"
+        length: 5
+        required: false
