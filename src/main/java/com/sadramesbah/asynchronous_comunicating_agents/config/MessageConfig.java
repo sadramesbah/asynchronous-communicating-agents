@@ -1,50 +1,36 @@
 package com.sadramesbah.asynchronous_comunicating_agents.config;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
-@Configuration
-@ConfigurationProperties(prefix = "messages")
 public class MessageConfig {
 
-  private Map<String, List<FieldConfig>> xml;
-  private Map<String, List<FieldConfig>> soap;
-  private Map<String, List<FieldConfig>> json;
+  private List<FieldConfig> fields;
 
-  // getters and setters
-  public Map<String, List<FieldConfig>> getXml() {
-    return xml;
+  public MessageConfig() {
   }
 
-  public void setXml(Map<String, List<FieldConfig>> xml) {
-    this.xml = xml;
+  public MessageConfig(List<FieldConfig> fields) {
+    this.fields = fields;
   }
 
-  public Map<String, List<FieldConfig>> getSoap() {
-    return soap;
+  public List<FieldConfig> getFields() {
+    return fields;
   }
 
-  public void setSoap(Map<String, List<FieldConfig>> soap) {
-    this.soap = soap;
+  public void setFields(List<FieldConfig> fields) {
+    this.fields = fields;
   }
 
-  public Map<String, List<FieldConfig>> getJson() {
-    return json;
+  // returns the field with the given name
+  public Optional<FieldConfig> getFieldByName(String fieldName) {
+    return fields.stream()
+        .filter(field -> field.getName().equals(fieldName))
+        .findFirst();
   }
 
-  public void setJson(Map<String, List<FieldConfig>> json) {
-    this.json = json;
-  }
-
-  // returns the field configurations for the given message type
-  public List<FieldConfig> getFieldConfigs(String type) {
-    return switch (type.toLowerCase()) {
-      case "xml" -> xml.get("fields");
-      case "soap" -> soap.get("fields");
-      case "json" -> json.get("fields");
-      default -> throw new IllegalArgumentException("Unsupported message type: " + type);
-    };
+  // returns true if the field with the given name is present
+  public boolean isFieldPresent(String fieldName) {
+    return getFieldByName(fieldName).isPresent();
   }
 }
