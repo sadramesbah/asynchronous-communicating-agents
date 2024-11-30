@@ -63,6 +63,20 @@
 			<optional>true</optional>
 		</dependency>
 
+		<!-- Java API for XML-Based Web Services (JAX-WS): Provides support for creating and consuming SOAP web services -->
+		<dependency>
+			<groupId>javax.xml.soap</groupId>
+			<artifactId>javax.xml.soap-api</artifactId>
+			<version>1.4.0</version>
+		</dependency>
+
+		<!-- SAAJ Implementation: Provides the necessary implementation for SOAP with Attachments API for Java (SAAJ) -->
+		<dependency>
+			<groupId>com.sun.xml.messaging.saaj</groupId>
+			<artifactId>saaj-impl</artifactId>
+			<version>1.5.2</version>
+		</dependency>
+
 		<!-- Spring Boot Starter Test: Provides support for testing Spring Boot applications -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
