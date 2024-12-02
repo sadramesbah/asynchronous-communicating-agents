@@ -1,4 +1,4 @@
-package com.sadramesbah.asynchronous_comunicating_agents;
+package com.sadramesbah.asynchronous_communicating_agents;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
