@@ -1,4 +1,4 @@
-package com.sadramesbah.asynchronous_comunicating_agents;
+package com.sadramesbah.asynchronous_communicating_agents;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
