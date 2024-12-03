@@ -1,6 +1,7 @@
 package com.sadramesbah.asynchronous_communicating_agents.handler;
 
 import com.sadramesbah.asynchronous_communicating_agents.message.XmlMessage;
+import java.util.stream.Stream;
 import org.springframework.stereotype.Component;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -43,14 +44,23 @@ public class XmlMessageHandler {
   }
 
   // checks if XmlMessage object has the expected structure
-  private boolean isInvalid(XmlMessage xmlMessageObject) {
-    return xmlMessageObject == null ||
-        xmlMessageObject.getMessageId() <= 0 ||
-        xmlMessageObject.getMessageTitle() == null ||
-        xmlMessageObject.getMessageBody() == null ||
-        xmlMessageObject.getCreationTime() == null ||
-        xmlMessageObject.getLastModified() == null ||
-        xmlMessageObject.getLastAgent() == null ||
-        xmlMessageObject.getStatus() == null;
+  boolean isInvalid(XmlMessage xmlMessageObject) {
+    if (xmlMessageObject == null) {
+      return true;
+    }
+
+    return Stream.of(
+        xmlMessageObject.getMessageId() <= 0,
+        isMissingNullOrEmpty(xmlMessageObject.getMessageTitle()),
+        isMissingNullOrEmpty(xmlMessageObject.getMessageBody()),
+        xmlMessageObject.getCreationTime() == null,
+        xmlMessageObject.getLastModified() == null,
+        isMissingNullOrEmpty(xmlMessageObject.getLastAgent()),
+        isMissingNullOrEmpty(xmlMessageObject.getStatus())
+    ).anyMatch(Boolean::booleanValue);
+  }
+
+  private boolean isMissingNullOrEmpty(String value) {
+    return value == null || value.isEmpty() || "null".equals(value);
   }
 }
