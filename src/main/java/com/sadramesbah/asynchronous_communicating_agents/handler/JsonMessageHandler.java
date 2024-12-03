@@ -1,5 +1,6 @@
 package com.sadramesbah.asynchronous_communicating_agents.handler;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.sadramesbah.asynchronous_communicating_agents.message.JsonMessage;
 import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -12,6 +13,8 @@ public class JsonMessageHandler {
 
   public JsonMessageHandler() {
     this.objectMapper = new ObjectMapper();
+    // allows to ignore unknown properties in JSON message
+    objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
   }
 
   // parses JSON message in string format and converts it to JsonMessage object
@@ -25,7 +28,7 @@ public class JsonMessageHandler {
   }
 
   // converts JsonMessage object to JSON message in string format
-  public String toJson(JsonMessage jsonMessageObject) throws JsonProcessingException {
+  public String toJsonString(JsonMessage jsonMessageObject) throws JsonProcessingException {
     if (isInvalid(jsonMessageObject)) {
       throw new JsonProcessingException("Invalid JSON message") {
       };
@@ -34,7 +37,7 @@ public class JsonMessageHandler {
   }
 
   // checks if JsonMessage object has the expected structure
-  private boolean isInvalid(JsonMessage jsonMessageObject) {
+  public boolean isInvalid(JsonMessage jsonMessageObject) {
     return jsonMessageObject == null ||
         jsonMessageObject.getMessageID() <= 0 ||
         jsonMessageObject.getMessageTitle() == null ||

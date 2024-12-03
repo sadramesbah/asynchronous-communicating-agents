@@ -1,7 +1,7 @@
 package com.sadramesbah.asynchronous_communicating_agents.message;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.security.Timestamp;
+import java.sql.Timestamp;
 
 public class JsonMessage {
 
