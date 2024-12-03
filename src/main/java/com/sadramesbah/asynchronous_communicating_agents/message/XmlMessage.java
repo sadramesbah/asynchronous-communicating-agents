@@ -1,7 +1,9 @@
 package com.sadramesbah.asynchronous_communicating_agents.message;
 
+import com.sadramesbah.asynchronous_communicating_agents.adapter.TimestampAdapter;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.sql.Timestamp;
 
 @XmlRootElement(name = "Message")
@@ -43,6 +45,7 @@ public class XmlMessage {
   }
 
   @XmlElement(name = "CreationTime")
+  @XmlJavaTypeAdapter(TimestampAdapter.class)
   public Timestamp getCreationTime() {
     return creationTime;
   }
@@ -52,6 +55,7 @@ public class XmlMessage {
   }
 
   @XmlElement(name = "LastModified")
+  @XmlJavaTypeAdapter(TimestampAdapter.class)
   public Timestamp getLastModified() {
     return lastModified;
   }
