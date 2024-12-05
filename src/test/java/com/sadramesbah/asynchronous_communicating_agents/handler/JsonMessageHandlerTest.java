@@ -75,11 +75,11 @@ class JsonMessageHandlerTest {
     validJsonMessageObject.setLastModified(new Timestamp(System.currentTimeMillis()));
     validJsonMessageObject.setLastAgent("Agent32");
     validJsonMessageObject.setStatus("Active");
-    assertFalse(jsonMessageHandler.isInvalid(validJsonMessageObject));
+    assertFalse(jsonMessageHandler.isInvalidJsonMessage(validJsonMessageObject));
 
     JsonMessage invalidJsonMessageObject = new JsonMessage();
     invalidJsonMessageObject.setMessageBody(null);
-    assertTrue(jsonMessageHandler.isInvalid(invalidJsonMessageObject));
+    assertTrue(jsonMessageHandler.isInvalidJsonMessage(invalidJsonMessageObject));
   }
 
   @Test

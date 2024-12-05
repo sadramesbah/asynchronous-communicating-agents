@@ -1,10 +1,8 @@
 package com.sadramesbah.asynchronous_communicating_agents.handler;
 
 import com.sadramesbah.asynchronous_communicating_agents.message.XmlMessage;
-import java.util.stream.Stream;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import java.util.stream.Stream;
 import jakarta.xml.soap.*;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -13,6 +11,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Component
 public class SoapMessageHandler {
@@ -31,32 +31,41 @@ public class SoapMessageHandler {
     this.messageFactory = MessageFactory.newInstance();
   }
 
+  // parses SOAP message in string format and converts it to SOAPMessage object
   public SOAPMessage parse(String soapMessageInString) throws IOException, SOAPException {
     logger.info("Parsing SOAP message from string.");
     try (ByteArrayInputStream inputStream = new ByteArrayInputStream(
         soapMessageInString.getBytes(StandardCharsets.UTF_8))) {
-      SOAPMessage soapMessage = messageFactory.createMessage(null, inputStream);
-      validateSoapMessage(soapMessage);
-      addSecurityToken(soapMessage.getSOAPHeader());
-      return soapMessage;
-    } catch (SOAPException | IOException e) {
-      logger.error("Error parsing SOAP message: {}", e.getMessage(), e);
-      throw e;
+      SOAPMessage soapMessageObject = messageFactory.createMessage(null, inputStream);
+      validateSoapMessage(soapMessageObject);
+      addSecurityToken(soapMessageObject.getSOAPHeader());
+      XmlMessage innerXmlMessage = extractInnerXmlMessage(soapMessageObject);
+      logger.info("Parsed SOAP message successfully. MessageID: {}, Agent: {}",
+          innerXmlMessage.getMessageId(), innerXmlMessage.getLastAgent());
+      return soapMessageObject;
+    } catch (SOAPException | IOException exception) {
+      logger.error("Error parsing SOAP message: {}", exception.getMessage(), exception);
+      throw exception;
     }
   }
 
-  public String toSoapString(SOAPMessage soapMessage) throws SOAPException, IOException {
+  // converts SOAPMessage object to SOAP message in string format
+  public String toSoapString(SOAPMessage soapMessageObject) throws SOAPException, IOException {
     logger.info("Converting SOAPMessage to string format.");
-    validateSoapMessage(soapMessage);
+    validateSoapMessage(soapMessageObject);
+    XmlMessage innerXmlMessage = extractInnerXmlMessage(soapMessageObject);
+    logger.info("Converting SOAPMessage to string format. MessageID: {}, Agent: {}",
+        innerXmlMessage.getMessageId(), innerXmlMessage.getLastAgent());
     try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
-      soapMessage.writeTo(outputStream);
+      soapMessageObject.writeTo(outputStream);
       return outputStream.toString(StandardCharsets.UTF_8);
-    } catch (SOAPException | IOException e) {
-      logger.error("Error converting SOAPMessage to string: {}", e.getMessage(), e);
-      throw e;
+    } catch (SOAPException | IOException exception) {
+      logger.error("Error converting SOAPMessage to string: {}", exception.getMessage(), exception);
+      throw exception;
     }
   }
 
+  // extracts the inner XML message from the SOAP message and validates its structure
   private void validateSoapMessage(SOAPMessage soapMessage) throws SOAPException {
     SOAPBody body = soapMessage.getSOAPBody();
     if (body == null || body.getFault() != null) {
@@ -75,12 +84,25 @@ public class SoapMessageHandler {
       if (innerXmlMessage == null || isInvalidXmlMessage(innerXmlMessage)) {
         throw new SOAPException("Invalid SOAP message structure.");
       }
-    } catch (JAXBException e) {
-      logger.error("Error unmarshalling SOAP body content: {}", e.getMessage(), e);
-      throw new SOAPException("Error unmarshalling SOAP body content.", e);
+    } catch (JAXBException exception) {
+      logger.error("Error unmarshalling SOAP body content: {}", exception.getMessage(), exception);
+      throw new SOAPException("Error unmarshalling SOAP body content.", exception);
     }
   }
 
+  // extracts the inner XML message from the SOAP message
+  private XmlMessage extractInnerXmlMessage(SOAPMessage soapMessage) throws SOAPException {
+    try {
+      SOAPBody body = soapMessage.getSOAPBody();
+      Node messageNode = (Node) body.getElementsByTagNameNS("*", "Message").item(0);
+      return (XmlMessage) unmarshaller.unmarshal(messageNode);
+    } catch (JAXBException exception) {
+      logger.error("Error extracting inner XML message: {}", exception.getMessage(), exception);
+      throw new SOAPException("Error extracting inner XML message.", exception);
+    }
+  }
+
+  // checks if XmlMessage object has the expected structure
   boolean isInvalidXmlMessage(XmlMessage xmlMessageObject) {
     if (xmlMessageObject == null) {
       return true;
