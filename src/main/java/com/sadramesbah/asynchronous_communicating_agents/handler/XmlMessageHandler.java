@@ -1,18 +1,21 @@
 package com.sadramesbah.asynchronous_communicating_agents.handler;
 
 import com.sadramesbah.asynchronous_communicating_agents.message.XmlMessage;
-import java.util.stream.Stream;
 import org.springframework.stereotype.Component;
+import java.util.stream.Stream;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.io.StringReader;
 import java.io.StringWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Component
 public class XmlMessageHandler {
 
+  private static final Logger logger = LoggerFactory.getLogger(XmlMessageHandler.class);
   private final Marshaller marshaller;
   private final Unmarshaller unmarshaller;
 
@@ -25,27 +28,38 @@ public class XmlMessageHandler {
 
   // parses XML message in string format and converts it to XmlMessage object
   public XmlMessage parse(String xmlMessageInString) throws JAXBException {
+    logger.info("Parsing XML message from string.");
     XmlMessage xmlMessageObject = (XmlMessage) unmarshaller.unmarshal(
         new StringReader(xmlMessageInString));
-    if (isInvalid(xmlMessageObject)) {
+    if (isInvalidXmlMessage(xmlMessageObject)) {
+      logger.warn("Invalid XML message structure occurred while parsing. MessageID: {}, Agent: {}",
+          xmlMessageObject.getMessageId(), xmlMessageObject.getLastAgent());
       throw new JAXBException("Invalid XML message");
     }
+    logger.info("Parsed XML message successfully. MessageID: {}, Agent: {}",
+        xmlMessageObject.getMessageId(), xmlMessageObject.getLastAgent());
     return xmlMessageObject;
   }
 
   // converts XmlMessage object to XML message in string format
-  public String toXml(XmlMessage xmlMessageObject) throws JAXBException {
-    if (isInvalid(xmlMessageObject)) {
+  public String toXmlString(XmlMessage xmlMessageObject) throws JAXBException {
+    logger.info("Converting XmlMessage object to XML string. MessageID: {}, Agent: {}",
+        xmlMessageObject.getMessageId(), xmlMessageObject.getLastAgent());
+    if (isInvalidXmlMessage(xmlMessageObject)) {
+      logger.warn(
+          "Invalid XML message structure occurred while converting to string. MessageID: {}, Agent: {}",
+          xmlMessageObject.getMessageId(), xmlMessageObject.getLastAgent());
       throw new JAXBException("Invalid XML message");
     }
-    StringWriter writer = new StringWriter();
-    marshaller.marshal(xmlMessageObject, writer);
-    return writer.toString();
+    StringWriter stringWriter = new StringWriter();
+    marshaller.marshal(xmlMessageObject, stringWriter);
+    return stringWriter.toString();
   }
 
   // checks if XmlMessage object has the expected structure
-  boolean isInvalid(XmlMessage xmlMessageObject) {
+  boolean isInvalidXmlMessage(XmlMessage xmlMessageObject) {
     if (xmlMessageObject == null) {
+      logger.warn("XmlMessage object is null.");
       return true;
     }
 

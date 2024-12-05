@@ -68,7 +68,7 @@ class XmlMessageHandlerTest {
     xmlMessageObject.setLastModified(Timestamp.from(Instant.now()));
     xmlMessageObject.setLastAgent("Agent32");
     xmlMessageObject.setStatus("Active");
-    String xmlInString = xmlMessageHandler.toXml(xmlMessageObject);
+    String xmlInString = xmlMessageHandler.toXmlString(xmlMessageObject);
     assertNotNull(xmlInString);
     assertTrue(xmlInString.contains("<MessageID>14</MessageID>"));
     assertTrue(xmlInString.contains("<MessageTitle>TestTitle</MessageTitle>"));
@@ -87,11 +87,11 @@ class XmlMessageHandlerTest {
     validXmlMessageObject.setLastModified(Timestamp.from(Instant.now()));
     validXmlMessageObject.setLastAgent("Agent32");
     validXmlMessageObject.setStatus("Active");
-    assertFalse(xmlMessageHandler.isInvalid(validXmlMessageObject));
+    assertFalse(xmlMessageHandler.isInvalidXmlMessage(validXmlMessageObject));
 
     XmlMessage invalidXmlMessageObject = new XmlMessage();
     invalidXmlMessageObject.setMessageBody(null);
-    assertTrue(xmlMessageHandler.isInvalid(invalidXmlMessageObject));
+    assertTrue(xmlMessageHandler.isInvalidXmlMessage(invalidXmlMessageObject));
   }
 
   @Test
@@ -131,6 +131,6 @@ class XmlMessageHandlerTest {
     xmlMessageObject.setLastModified(null);
     xmlMessageObject.setLastAgent(null);
     xmlMessageObject.setStatus(null);
-    assertThrows(JAXBException.class, () -> xmlMessageHandler.toXml(xmlMessageObject));
+    assertThrows(JAXBException.class, () -> xmlMessageHandler.toXmlString(xmlMessageObject));
   }
 }
