@@ -51,7 +51,7 @@ public class JsonMessageHandler {
   }
 
   // checks if JsonMessage object has the expected structure
-  public boolean isInvalidJsonMessage(JsonMessage jsonMessageObject) {
+  boolean isInvalidJsonMessage(JsonMessage jsonMessageObject) {
     if (jsonMessageObject == null) {
       logger.warn("JsonMessage object is null.");
       return true;

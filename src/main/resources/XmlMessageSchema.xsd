@@ -1,0 +1,17 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+
+  <xs:element name="Message">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="MessageID" type="xs:int"/>
+        <xs:element name="MessageTitle" type="xs:string"/>
+        <xs:element name="MessageBody" type="xs:string"/>
+        <xs:element name="CreationTime" type="xs:dateTime"/>
+        <xs:element name="LastModified" type="xs:dateTime"/>
+        <xs:element name="LastAgent" type="xs:string"/>
+        <xs:element name="Status" type="xs:string"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+</xs:schema>
