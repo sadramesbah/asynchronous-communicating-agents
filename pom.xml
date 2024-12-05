@@ -77,6 +77,13 @@
 			<version>2.3.1</version>
 		</dependency>
 
+		<!-- Java API for XML-based Web Services (JAX-WS) SOAP API -->
+		<dependency>
+			<groupId>javax.xml.soap</groupId>
+			<artifactId>javax.xml.soap-api</artifactId>
+			<version>1.4.0</version>
+		</dependency>
+
 		<!-- Spring Boot Starter Test: Provides support for testing Spring Boot applications -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
