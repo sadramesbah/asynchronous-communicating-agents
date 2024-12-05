@@ -1,90 +1,111 @@
 package com.sadramesbah.asynchronous_communicating_agents.handler;
 
 import com.sadramesbah.asynchronous_communicating_agents.message.XmlMessage;
+import java.util.stream.Stream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import jakarta.xml.soap.SOAPHeader;
-import jakarta.xml.soap.MessageFactory;
-import jakarta.xml.soap.SOAPBody;
-import jakarta.xml.soap.SOAPException;
-import jakarta.xml.soap.SOAPMessage;
+import jakarta.xml.soap.*;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Optional;
 
 @Component
 public class SoapMessageHandler {
 
-  private final Marshaller marshaller;
+  private static final Logger logger = LoggerFactory.getLogger(SoapMessageHandler.class);
+  private static final String NAMESPACE_URI = "https://realuri.example.com/security";
+  private static final String SECURITY_TOKEN_HEADER = "SecurityToken";
+  private static final String DEFAULT_SECURITY_TOKEN = "123456789";
+
   private final Unmarshaller unmarshaller;
   private final MessageFactory messageFactory;
 
   public SoapMessageHandler() throws JAXBException, SOAPException {
     JAXBContext jaxbContext = JAXBContext.newInstance(XmlMessage.class);
-    this.marshaller = jaxbContext.createMarshaller();
-    this.marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
     this.unmarshaller = jaxbContext.createUnmarshaller();
     this.messageFactory = MessageFactory.newInstance();
   }
 
-  // parses SOAP message in string format and converts it to SOAPMessage object
-  public SOAPMessage parse(String soapMessageInString)
-      throws IOException, SOAPException, JAXBException {
+  public SOAPMessage parse(String soapMessageInString) throws IOException, SOAPException {
+    logger.info("Parsing SOAP message from string.");
     try (ByteArrayInputStream inputStream = new ByteArrayInputStream(
         soapMessageInString.getBytes(StandardCharsets.UTF_8))) {
       SOAPMessage soapMessage = messageFactory.createMessage(null, inputStream);
-      if (isInvalid(soapMessage)) {
-        throw new SOAPException("Invalid SOAP message");
-      }
-      // ensures SOAP header is created
-      SOAPHeader header = Optional.ofNullable(soapMessage.getSOAPHeader())
-          .orElseGet(() -> {
-            try {
-              return soapMessage.getSOAPPart().getEnvelope().addHeader();
-            } catch (SOAPException e) {
-              throw new RuntimeException("Failed to add SOAP header", e);
-            }
-          });
-      // adds default header details
-      header.addHeaderElement(
-          soapMessage.getSOAPPart().getEnvelope()
-              .createName("AgentID", "ns", "http://sadramesbah.com/agent")
-      ).addTextNode("Agent1");
+      validateSoapMessage(soapMessage);
+      addSecurityToken(soapMessage.getSOAPHeader());
       return soapMessage;
+    } catch (SOAPException | IOException e) {
+      logger.error("Error parsing SOAP message: {}", e.getMessage(), e);
+      throw e;
     }
   }
 
-  // converts SOAPMessage object to SOAP message in string format
-  public String toSoap(SOAPMessage soapMessageObject)
-      throws JAXBException, SOAPException, IOException {
-    if (isInvalid(soapMessageObject)) {
-      throw new JAXBException("Invalid XML message");
+  public String toSoapString(SOAPMessage soapMessage) throws SOAPException, IOException {
+    logger.info("Converting SOAPMessage to string format.");
+    validateSoapMessage(soapMessage);
+    try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+      soapMessage.writeTo(outputStream);
+      return outputStream.toString(StandardCharsets.UTF_8);
+    } catch (SOAPException | IOException e) {
+      logger.error("Error converting SOAPMessage to string: {}", e.getMessage(), e);
+      throw e;
     }
-    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-    soapMessageObject.writeTo(outputStream);
-    return outputStream.toString(StandardCharsets.UTF_8);
   }
 
-  // checks if SOAPMessage object has the expected structure
-  private boolean isInvalid(SOAPMessage soapMessageObject) throws SOAPException, JAXBException {
-    SOAPBody body = soapMessageObject.getSOAPBody();
+  private void validateSoapMessage(SOAPMessage soapMessage) throws SOAPException {
+    SOAPBody body = soapMessage.getSOAPBody();
     if (body == null || body.getFault() != null) {
+      logger.warn("SOAP body is invalid or contains a fault.");
+      throw new SOAPException("Invalid SOAP message structure.");
+    }
+
+    try {
+      Node messageNode = (Node) body.getElementsByTagNameNS("*", "Message").item(0);
+      if (messageNode == null) {
+        logger.warn("Message element is missing in SOAP body.");
+        throw new SOAPException("Invalid SOAP message structure.");
+      }
+
+      XmlMessage innerXmlMessage = (XmlMessage) unmarshaller.unmarshal(messageNode);
+      if (innerXmlMessage == null || isInvalidXmlMessage(innerXmlMessage)) {
+        throw new SOAPException("Invalid SOAP message structure.");
+      }
+    } catch (JAXBException e) {
+      logger.error("Error unmarshalling SOAP body content: {}", e.getMessage(), e);
+      throw new SOAPException("Error unmarshalling SOAP body content.", e);
+    }
+  }
+
+  boolean isInvalidXmlMessage(XmlMessage xmlMessageObject) {
+    if (xmlMessageObject == null) {
       return true;
     }
-    XmlMessage xmlMessageObject = (XmlMessage) unmarshaller.unmarshal(
-        body.extractContentAsDocument());
-    return xmlMessageObject == null ||
-        xmlMessageObject.getMessageId() <= 0 ||
-        xmlMessageObject.getMessageTitle() == null ||
-        xmlMessageObject.getMessageBody() == null ||
-        xmlMessageObject.getCreationTime() == null ||
-        xmlMessageObject.getLastModified() == null ||
-        xmlMessageObject.getLastAgent() == null ||
-        xmlMessageObject.getStatus() == null;
+
+    return Stream.of(
+        xmlMessageObject.getMessageId() <= 0,
+        isMissingNullOrEmpty(xmlMessageObject.getMessageTitle()),
+        isMissingNullOrEmpty(xmlMessageObject.getMessageBody()),
+        xmlMessageObject.getCreationTime() == null,
+        xmlMessageObject.getLastModified() == null,
+        isMissingNullOrEmpty(xmlMessageObject.getLastAgent()),
+        isMissingNullOrEmpty(xmlMessageObject.getStatus())
+    ).anyMatch(Boolean::booleanValue);
+  }
+
+  private boolean isMissingNullOrEmpty(String value) {
+    return value == null || value.isEmpty() || "null".equals(value);
+  }
+
+  private void addSecurityToken(SOAPHeader header) throws SOAPException {
+    logger.info("Adding SecurityToken to the SOAP header.");
+    SOAPFactory soapFactory = SOAPFactory.newInstance();
+    Name securityTokenName = soapFactory.createName(SECURITY_TOKEN_HEADER, "", NAMESPACE_URI);
+    SOAPHeaderElement securityTokenElement = header.addHeaderElement(securityTokenName);
+    securityTokenElement.setTextContent(DEFAULT_SECURITY_TOKEN);
   }
 }
