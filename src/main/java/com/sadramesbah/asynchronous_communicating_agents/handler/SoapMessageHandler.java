@@ -66,27 +66,23 @@ public class SoapMessageHandler {
   }
 
   // extracts the inner XML message from the SOAP message and validates its structure
-  private void validateSoapMessage(SOAPMessage soapMessage) throws SOAPException {
-    SOAPBody body = soapMessage.getSOAPBody();
+  private void validateSoapMessage(SOAPMessage soapMessageObject) throws SOAPException {
+    SOAPBody body = soapMessageObject.getSOAPBody();
     if (body == null || body.getFault() != null) {
       logger.warn("SOAP body is invalid or contains a fault.");
       throw new SOAPException("Invalid SOAP message structure.");
     }
 
-    try {
-      Node messageNode = (Node) body.getElementsByTagNameNS("*", "Message").item(0);
-      if (messageNode == null) {
-        logger.warn("Message element is missing in SOAP body.");
-        throw new SOAPException("Invalid SOAP message structure.");
-      }
+    Node messageNode = (Node) body.getElementsByTagNameNS("*", "Message").item(0);
+    if (messageNode == null) {
+      logger.warn("Message element is missing in SOAP body.");
+      throw new SOAPException("Invalid SOAP message structure.");
+    }
 
-      XmlMessage innerXmlMessage = (XmlMessage) unmarshaller.unmarshal(messageNode);
-      if (innerXmlMessage == null || isInvalidXmlMessage(innerXmlMessage)) {
-        throw new SOAPException("Invalid SOAP message structure.");
-      }
-    } catch (JAXBException exception) {
-      logger.error("Error unmarshalling SOAP body content: {}", exception.getMessage(), exception);
-      throw new SOAPException("Error unmarshalling SOAP body content.", exception);
+    XmlMessage innerXmlMessage = extractInnerXmlMessage(soapMessageObject);
+    if (innerXmlMessage == null || isInvalidXmlMessage(innerXmlMessage)) {
+      logger.warn("Invalid inner XML structure in SOAP message.");
+      throw new SOAPException("Invalid SOAP message structure.");
     }
   }
 
