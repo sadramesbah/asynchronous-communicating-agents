@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "JsonMessage",
+  "type": "object",
+  "properties": {
+    "MessageID": {
+      "type": "integer"
+    },
+    "MessageTitle": {
+      "type": "string"
+    },
+    "MessageBody": {
+      "type": "string"
+    },
+    "CreationTime": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "LastModified": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "LastAgent": {
+      "type": "string"
+    },
+    "Status": {
+      "type": "string"
+    }
+  },
+  "required": ["MessageID", "MessageTitle", "MessageBody", "CreationTime", "LastModified", "LastAgent", "Status"]
+}

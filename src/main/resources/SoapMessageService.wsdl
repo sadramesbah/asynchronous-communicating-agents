@@ -1,0 +1,59 @@
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/"
+  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+  xmlns:tns="http://example.com/soap"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://example.com/soap">
+
+  <types>
+    <xsd:schema targetNamespace="http://example.com/soap">
+      <xsd:element name="Message">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="MessageID" type="xsd:int"/>
+            <xsd:element name="MessageTitle" type="xsd:string"/>
+            <xsd:element name="MessageBody" type="xsd:string"/>
+            <xsd:element name="CreationTime" type="xsd:dateTime"/>
+            <xsd:element name="LastModified" type="xsd:dateTime"/>
+            <xsd:element name="LastAgent" type="xsd:string"/>
+            <xsd:element name="Status" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:schema>
+  </types>
+
+  <message name="MessageRequest">
+    <part name="parameters" element="tns:Message"/>
+  </message>
+
+  <message name="MessageResponse">
+    <part name="parameters" element="tns:Message"/>
+  </message>
+
+  <portType name="MessagePortType">
+    <operation name="processMessage">
+      <input message="tns:MessageRequest"/>
+      <output message="tns:MessageResponse"/>
+    </operation>
+  </portType>
+
+  <binding name="MessageBinding" type="tns:MessagePortType">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+    <operation name="processMessage">
+      <soap:operation soapAction="http://example.com/soap/processMessage"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+  </binding>
+
+  <service name="MessageService">
+    <port name="MessagePort" binding="tns:MessageBinding">
+      <soap:address location="http://example.com/soap/MessageService"/>
+    </port>
+  </service>
+
+</definitions>

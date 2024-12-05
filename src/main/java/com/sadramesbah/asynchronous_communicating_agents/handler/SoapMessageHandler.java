@@ -105,6 +105,7 @@ public class SoapMessageHandler {
   // checks if XmlMessage object has the expected structure
   boolean isInvalidXmlMessage(XmlMessage xmlMessageObject) {
     if (xmlMessageObject == null) {
+      logger.warn("XmlMessage object is null.");
       return true;
     }
 
