@@ -2,7 +2,7 @@ package com.sadramesbah.asynchronous_communicating_agents.handler;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 import jakarta.xml.soap.SOAPException;
 import jakarta.xml.soap.SOAPMessage;
 import java.io.IOException;

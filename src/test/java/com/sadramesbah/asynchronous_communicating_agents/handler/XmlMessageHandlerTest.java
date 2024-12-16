@@ -3,7 +3,7 @@ package com.sadramesbah.asynchronous_communicating_agents.handler;
 import com.sadramesbah.asynchronous_communicating_agents.message.XmlMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 import java.sql.Timestamp;
 import java.time.Instant;
 
