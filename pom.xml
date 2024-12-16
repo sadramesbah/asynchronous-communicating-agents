@@ -71,18 +71,18 @@
 			<optional>true</optional>
 		</dependency>
 
-		<!-- JAXB API: Provides the Java Architecture for XML Binding (JAXB) API for XML binding -->
+		<!-- Jakarta XML Bind API: Provides the Jakarta XML Binding (JAXB) API for XML binding -->
 		<dependency>
-			<groupId>javax.xml.bind</groupId>
-			<artifactId>jaxb-api</artifactId>
-			<version>2.3.1</version>
+			<groupId>jakarta.xml.bind</groupId>
+			<artifactId>jakarta.xml.bind-api</artifactId>
+			<version>4.0.2</version>
 		</dependency>
 
 		<!-- GlassFish JAXB Runtime: Provides the runtime implementation for the JAXB API -->
 		<dependency>
 			<groupId>org.glassfish.jaxb</groupId>
 			<artifactId>jaxb-runtime</artifactId>
-			<version>2.3.1</version>
+			<version>4.0.5</version>
 		</dependency>
 
 		<!-- Java API for XML-based Web Services (JAX-WS) SOAP API -->

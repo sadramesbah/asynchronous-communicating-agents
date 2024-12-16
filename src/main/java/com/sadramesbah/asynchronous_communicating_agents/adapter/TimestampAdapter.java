@@ -1,6 +1,6 @@
 package com.sadramesbah.asynchronous_communicating_agents.adapter;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 import java.sql.Timestamp;
 import java.time.Instant;
 
