@@ -31,10 +31,18 @@
 	</properties>
 
 	<dependencies>
+
 		<!-- Spring Boot Starter Data JPA: Provides support for JPA-based data access -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+
+		<!-- Spring Web MVC framework for building web applications -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<version>6.2.1</version> <!-- Update to a version that fixes the "CVE-2024-38828" vulnerability -->
 		</dependency>
 
 		<!-- Spring Boot Starter Web: Provides support for building web applications, including RESTful services -->
