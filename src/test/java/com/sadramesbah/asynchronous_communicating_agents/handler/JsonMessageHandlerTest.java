@@ -26,7 +26,7 @@ class JsonMessageHandlerTest {
             + ",\"LastAgent\":\"Agent32\",\"Status\":\"Active\"}";
     JsonMessage jsonMessageObject = jsonMessageHandler.parse(jsonInString);
     assertNotNull(jsonMessageObject);
-    assertEquals(14, jsonMessageObject.getMessageID());
+    assertEquals(14, jsonMessageObject.getMessageId());
     assertEquals("TestTitle", jsonMessageObject.getMessageTitle());
     assertEquals("TestBody", jsonMessageObject.getMessageBody());
     assertEquals(Timestamp.from(Instant.parse("2024-10-10T10:25:00Z")),
@@ -48,7 +48,7 @@ class JsonMessageHandlerTest {
   @Test
   void testConvertingJsonObjectToString() throws IOException {
     JsonMessage jsonMessageObject = new JsonMessage();
-    jsonMessageObject.setMessageID(14);
+    jsonMessageObject.setMessageId(14);
     jsonMessageObject.setMessageTitle("TestTitle");
     jsonMessageObject.setMessageBody("TestBody");
     jsonMessageObject.setCreationTime(new Timestamp(System.currentTimeMillis()));
@@ -68,7 +68,7 @@ class JsonMessageHandlerTest {
   @Test
   void testIsInvalid() {
     JsonMessage validJsonMessageObject = new JsonMessage();
-    validJsonMessageObject.setMessageID(14);
+    validJsonMessageObject.setMessageId(14);
     validJsonMessageObject.setMessageTitle("TestTitle");
     validJsonMessageObject.setMessageBody("TestBody");
     validJsonMessageObject.setCreationTime(new Timestamp(System.currentTimeMillis()));
@@ -97,7 +97,7 @@ class JsonMessageHandlerTest {
             + "\"Status\":\"Active\"}";
     JsonMessage jsonMessageObject = jsonMessageHandler.parse(jsonInString);
     assertNotNull(jsonMessageObject);
-    assertEquals(14, jsonMessageObject.getMessageID());
+    assertEquals(14, jsonMessageObject.getMessageId());
     assertEquals("TestTitle", jsonMessageObject.getMessageTitle());
     assertEquals("TestBody", jsonMessageObject.getMessageBody());
     assertEquals(Timestamp.from(Instant.parse("2024-10-10T10:25:00Z")),
@@ -111,7 +111,7 @@ class JsonMessageHandlerTest {
   @Test
   void testToJsonWithNullFields() {
     JsonMessage jsonMessageObject = new JsonMessage();
-    jsonMessageObject.setMessageID(1);
+    jsonMessageObject.setMessageId(1);
     jsonMessageObject.setMessageTitle(null);
     jsonMessageObject.setMessageBody(null);
     jsonMessageObject.setCreationTime(null);

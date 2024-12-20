@@ -7,7 +7,7 @@ import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.sql.Timestamp;
 
 @XmlRootElement(name = "Message")
-public class XmlMessage {
+public class XmlMessage implements Message {
 
   private int messageId;
   private String messageTitle;

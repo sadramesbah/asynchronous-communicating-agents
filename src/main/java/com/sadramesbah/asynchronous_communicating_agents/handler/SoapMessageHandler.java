@@ -87,7 +87,7 @@ public class SoapMessageHandler {
   }
 
   // extracts the inner XML message from the SOAP message
-  private XmlMessage extractInnerXmlMessage(SOAPMessage soapMessage) throws SOAPException {
+  public XmlMessage extractInnerXmlMessage(SOAPMessage soapMessage) throws SOAPException {
     try {
       SOAPBody body = soapMessage.getSOAPBody();
       Node messageNode = (Node) body.getElementsByTagNameNS("*", "Message").item(0);

@@ -3,10 +3,10 @@ package com.sadramesbah.asynchronous_communicating_agents.message;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.sql.Timestamp;
 
-public class JsonMessage {
+public class JsonMessage implements Message {
 
   @JsonProperty("MessageID")
-  private int messageID;
+  private int messageId;
 
   @JsonProperty("MessageTitle")
   private String messageTitle;
@@ -27,12 +27,12 @@ public class JsonMessage {
   private String status;
 
   // getters and setters
-  public int getMessageID() {
-    return messageID;
+  public int getMessageId() {
+    return messageId;
   }
 
-  public void setMessageID(int messageID) {
-    this.messageID = messageID;
+  public void setMessageId(int messageID) {
+    this.messageId = messageID;
   }
 
   public String getMessageTitle() {
