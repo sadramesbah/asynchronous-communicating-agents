@@ -27,23 +27,23 @@ public class JsonMessageHandler {
     JsonMessage jsonMessageObject = objectMapper.readValue(jsonMessageInString, JsonMessage.class);
     if (isInvalidJsonMessage(jsonMessageObject)) {
       logger.warn("Invalid JSON message structure occurred while parsing. MessageID: {}, Agent: {}",
-          jsonMessageObject.getMessageID(), jsonMessageObject.getLastAgent());
+          jsonMessageObject.getMessageId(), jsonMessageObject.getLastAgent());
       throw new JsonProcessingException("Invalid JSON message") {
       };
     }
     logger.info("Parsed JSON message successfully. MessageID: {}, Agent: {}",
-        jsonMessageObject.getMessageID(), jsonMessageObject.getLastAgent());
+        jsonMessageObject.getMessageId(), jsonMessageObject.getLastAgent());
     return jsonMessageObject;
   }
 
   // converts JsonMessage object to JSON message in string format
   public String toJsonString(JsonMessage jsonMessageObject) throws JsonProcessingException {
     logger.info("Converting JsonMessage object to JSON string. MessageID: {}, Agent: {}",
-        jsonMessageObject.getMessageID(), jsonMessageObject.getLastAgent());
+        jsonMessageObject.getMessageId(), jsonMessageObject.getLastAgent());
     if (isInvalidJsonMessage(jsonMessageObject)) {
       logger.warn(
           "Invalid JSON message structure occurred while converting to string. MessageID: {}, Agent: {}",
-          jsonMessageObject.getMessageID(), jsonMessageObject.getLastAgent());
+          jsonMessageObject.getMessageId(), jsonMessageObject.getLastAgent());
       throw new JsonProcessingException("Invalid JSON message") {
       };
     }
@@ -58,7 +58,7 @@ public class JsonMessageHandler {
     }
 
     return Stream.of(
-        jsonMessageObject.getMessageID() <= 0,
+        jsonMessageObject.getMessageId() <= 0,
         isMissingNullOrEmpty(jsonMessageObject.getMessageTitle()),
         isMissingNullOrEmpty(jsonMessageObject.getMessageBody()),
         jsonMessageObject.getCreationTime() == null,

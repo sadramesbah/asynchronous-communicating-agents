@@ -1,0 +1,75 @@
+package com.sadramesbah.asynchronous_communicating_agents.agent;
+
+import com.sadramesbah.asynchronous_communicating_agents.handler.JsonMessageHandler;
+import com.sadramesbah.asynchronous_communicating_agents.handler.SoapMessageHandler;
+import com.sadramesbah.asynchronous_communicating_agents.handler.XmlMessageHandler;
+import com.sadramesbah.asynchronous_communicating_agents.message.JsonMessage;
+import com.sadramesbah.asynchronous_communicating_agents.message.Message;
+import com.sadramesbah.asynchronous_communicating_agents.message.MessageType;
+import com.sadramesbah.asynchronous_communicating_agents.message.XmlMessage;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.soap.SOAPException;
+import jakarta.xml.soap.SOAPMessage;
+import java.io.IOException;
+import java.sql.Timestamp;
+
+public class MessagingAgent {
+
+  private final String id;
+  private final JsonMessageHandler jsonHandler;
+  private final XmlMessageHandler xmlHandler;
+  private final SoapMessageHandler soapHandler;
+
+  public MessagingAgent(String agentId) throws JAXBException, SOAPException {
+    this.id = agentId;
+    this.jsonHandler = new JsonMessageHandler();
+    this.xmlHandler = new XmlMessageHandler();
+    this.soapHandler = new SoapMessageHandler();
+  }
+
+  // handles the input message based on message type
+  public String handleInputMessage(String inputMessage, MessageType inputMessageType)
+      throws Exception {
+    return switch (inputMessageType) {
+      case JSON -> updateJsonMessage(jsonHandler.parse(inputMessage));
+      case XML -> updateXmlMessage(xmlHandler.parse(inputMessage));
+      case SOAP -> updateSoapMessage(soapHandler.parse(inputMessage));
+      default ->
+          throw new IllegalArgumentException("Unsupported message type: " + inputMessageType);
+    };
+  }
+
+  // updates the Json message attributes and returns the updated Json message in String format
+  private String updateJsonMessage(JsonMessage jsonMessageObject) throws Exception {
+    return jsonHandler.toJsonString((JsonMessage) updateMessageAttributes(jsonMessageObject));
+  }
+
+  // updates the Xml message attributes and returns the updated Xml message in String format
+  private String updateXmlMessage(XmlMessage xmlMessageObject) throws JAXBException {
+    return xmlHandler.toXmlString((XmlMessage) updateMessageAttributes(xmlMessageObject));
+  }
+
+  // updates the Soap message attributes and returns the updated Soap message in String format
+  private String updateSoapMessage(SOAPMessage soapMessageObject)
+      throws SOAPException, IOException, JAXBException {
+    XmlMessage innerXmlMessageObject = soapHandler.extractInnerXmlMessage(soapMessageObject);
+    soapMessageObject.getSOAPBody().setTextContent(
+        xmlHandler.toXmlString((XmlMessage) updateMessageAttributes(innerXmlMessageObject)));
+    return soapHandler.toSoapString(soapMessageObject);
+  }
+
+  // updates the message attributes and returns the updated message object
+  private Message updateMessageAttributes(Message message) {
+    message.setMessageBody(
+        message.getMessageBody() + " Processed by Agent: " + id + " at "
+            + java.time.LocalDateTime.now()
+            .format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.")));
+    message.setLastModified(new Timestamp(System.currentTimeMillis()));
+    message.setLastAgent(id);
+    return message;
+  }
+
+  public String getId() {
+    return id;
+  }
+}
