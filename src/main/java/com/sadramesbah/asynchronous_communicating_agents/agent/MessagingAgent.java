@@ -8,10 +8,13 @@ import com.sadramesbah.asynchronous_communicating_agents.message.Message;
 import com.sadramesbah.asynchronous_communicating_agents.message.MessageType;
 import com.sadramesbah.asynchronous_communicating_agents.message.XmlMessage;
 import jakarta.xml.bind.JAXBException;
+import jakarta.xml.soap.SOAPBody;
+import jakarta.xml.soap.SOAPElement;
 import jakarta.xml.soap.SOAPException;
 import jakarta.xml.soap.SOAPMessage;
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.Optional;
 
 public class MessagingAgent {
 
@@ -51,10 +54,30 @@ public class MessagingAgent {
 
   // updates the Soap message attributes and returns the updated Soap message in String format
   private String updateSoapMessage(SOAPMessage soapMessageObject)
-      throws SOAPException, IOException, JAXBException {
-    XmlMessage innerXmlMessageObject = soapHandler.extractInnerXmlMessage(soapMessageObject);
-    soapMessageObject.getSOAPBody().setTextContent(
-        xmlHandler.toXmlString((XmlMessage) updateMessageAttributes(innerXmlMessageObject)));
+      throws SOAPException, IOException {
+    SOAPBody body = soapMessageObject.getSOAPPart().getEnvelope().getBody();
+
+    Optional.ofNullable((SOAPElement) body.getElementsByTagName("Message").item(0))
+        .ifPresent(messageElement -> {
+
+          Optional.ofNullable(
+                  (SOAPElement) messageElement.getElementsByTagName("MessageBody").item(0))
+              .ifPresent(messageBodyElement -> messageBodyElement.setTextContent(
+                  messageBodyElement.getTextContent() + " Processed by Agent: " + id + " at " +
+                      java.time.LocalDateTime.now().format(
+                          java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss."))));
+
+          Optional.ofNullable(
+                  (SOAPElement) messageElement.getElementsByTagName("LastAgent").item(0))
+              .ifPresent(lastAgentElement -> lastAgentElement.setTextContent(id));
+
+          Optional.ofNullable(
+                  (SOAPElement) messageElement.getElementsByTagName("LastModified").item(0))
+              .ifPresent(lastModifiedElement -> lastModifiedElement.setTextContent(
+                  java.time.Instant.now().toString()));
+        });
+
+    soapMessageObject.saveChanges();
     return soapHandler.toSoapString(soapMessageObject);
   }
 

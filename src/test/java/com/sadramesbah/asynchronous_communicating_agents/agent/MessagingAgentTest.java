@@ -22,7 +22,7 @@ class MessagingAgentTest {
     messagingAgent = new MessagingAgent(AGENT_ID);
   }
 
-/*  @Test
+  @Test
   void testHandleSoapMessage() throws Exception {
     String soapMessageInString = new StringBuilder()
         .append("<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\">")
@@ -33,7 +33,7 @@ class MessagingAgentTest {
         .append("<MessageTitle>Test Title</MessageTitle>")
         .append("<MessageBody>Test Body</MessageBody>")
         .append("<CreationTime>2024-12-20T12:00:00Z</CreationTime>")
-        .append("<LastModified>2024-12-020T12:45:00Z</LastModified>")
+        .append("<LastModified>2024-12-20T12:45:00Z</LastModified>")
         .append("<LastAgent>Agent-108</LastAgent>")
         .append("<Status>Active</Status>")
         .append("</Message>")
@@ -46,7 +46,7 @@ class MessagingAgentTest {
     assertNotNull(result);
     assertTrue(result.contains("Test Body Processed by Agent: " + AGENT_ID));
     assertTrue(result.contains("<LastAgent>" + AGENT_ID + "</LastAgent>"));
-  }*/
+  }
 
   @Test
   void testHandleXmlMessage() throws Exception {
@@ -156,7 +156,7 @@ class MessagingAgentTest {
             + ",\"LastAgent\":\"Agent-108\",\"Status\":\"Active\"}";
 
     String result = messagingAgent.handleInputMessage(jsonMessage, MessageType.JSON);
-    Timestamp originalTimestamp = Timestamp.from(Instant.parse("2024-10-10T11:45:00Z"));
+    Timestamp originalTimestamp = Timestamp.from(Instant.parse("2024-12-20T16:35:00Z"));
     JsonMessage updatedMessage = new JsonMessageHandler().parse(result);
     assertNotNull(updatedMessage.getLastModified());
     assertTrue(updatedMessage.getLastModified().after(originalTimestamp),
