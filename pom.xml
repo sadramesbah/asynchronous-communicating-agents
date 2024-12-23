@@ -45,7 +45,6 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-webmvc</artifactId>
-      <version>6.2.1</version> <!-- Update to a version that fixes the "CVE-2024-38828" vulnerability -->
     </dependency>
 
     <!-- Spring Boot Starter Web: Provides support for building web applications, including RESTful services -->
@@ -109,7 +108,21 @@
       <scope>test</scope>
     </dependency>
 
-    <!-- Apache Commons IO: Updated to the latest version to fix "CVE-2024-47554" vulnerability -->
+    <!-- Logback Core: updated to the latest version to address "CVE-2024-12798" and "CVE-2024-12801" vulnerabilities -->
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-core</artifactId>
+      <version>1.5.13</version>
+    </dependency>
+
+    <!-- Logback Classic: updated to the latest version to address "CVE-2024-12798" and "CVE-2024-12801" vulnerabilities -->
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>1.5.13</version>
+    </dependency>
+
+    <!-- Apache Commons IO: updated to the latest version to fix "CVE-2024-47554" vulnerability -->
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
