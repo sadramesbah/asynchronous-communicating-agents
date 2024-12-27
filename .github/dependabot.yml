@@ -11,3 +11,4 @@ updates:
       interval: "weekly"
       day: "monday"
       time: "02:00"
+      timezone: "America/New_York"
