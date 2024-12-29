@@ -101,6 +101,13 @@
       <scope>test</scope>
     </dependency>
 
+    <!-- javax.annotation API: Provides common annotations used in Java applications -->
+    <dependency>
+      <groupId>javax.annotation</groupId>
+      <artifactId>javax.annotation-api</artifactId>
+      <version>1.3.2</version>
+    </dependency>
+
     <!-- Spring Kafka Test: Provides support for testing Kafka integration -->
     <dependency>
       <groupId>org.springframework.kafka</groupId>
