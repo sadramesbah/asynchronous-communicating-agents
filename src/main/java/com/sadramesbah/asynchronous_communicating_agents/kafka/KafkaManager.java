@@ -13,7 +13,6 @@ import java.util.Collections;
 import java.util.Properties;
 import java.util.Set;
 
-@Component
 public class KafkaManager {
 
   private static final Logger logger = LoggerFactory.getLogger(KafkaManager.class);
