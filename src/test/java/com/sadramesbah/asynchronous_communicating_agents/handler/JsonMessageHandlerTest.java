@@ -1,5 +1,6 @@
 package com.sadramesbah.asynchronous_communicating_agents.handler;
 
+import com.sadramesbah.asynchronous_communicating_agents.exception.InvalidJsonMessageException;
 import com.sadramesbah.asynchronous_communicating_agents.message.JsonMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,7 +20,7 @@ class JsonMessageHandlerTest {
   }
 
   @Test
-  void testParseValidJson() throws IOException {
+  void testParseValidJson() throws IOException, InvalidJsonMessageException {
     String jsonInString =
         "{\"MessageID\":14,\"MessageTitle\":\"TestTitle\",\"MessageBody\":\"TestBody\","
             + "\"CreationTime\":\"2024-10-10T10:25:00Z\",\"LastModified\":\"2024-10-10T11:45:00Z\""
@@ -46,7 +47,7 @@ class JsonMessageHandlerTest {
   }
 
   @Test
-  void testConvertingJsonObjectToString() throws IOException {
+  void testConvertingJsonObjectToString() throws IOException, InvalidJsonMessageException {
     JsonMessage jsonMessageObject = new JsonMessage();
     jsonMessageObject.setMessageId(14);
     jsonMessageObject.setMessageTitle("TestTitle");
@@ -85,11 +86,11 @@ class JsonMessageHandlerTest {
   @Test
   void testParseEmptyJson() {
     String json = "{}";
-    assertThrows(IOException.class, () -> jsonMessageHandler.parse(json));
+    assertThrows(InvalidJsonMessageException.class, () -> jsonMessageHandler.parse(json));
   }
 
   @Test
-  void testParseJsonWithAdditionalFields() throws IOException {
+  void testParseJsonWithAdditionalFields() throws IOException, InvalidJsonMessageException {
     String jsonInString =
         "{\"MessageID\":14,\"MessageTitle\":\"TestTitle\",\"MessageBody\":\"TestBody\","
             + "\"ExtraField\":\"ExtraValue\",\"CreationTime\":\"2024-10-10T10:25:00Z\","
@@ -118,6 +119,7 @@ class JsonMessageHandlerTest {
     jsonMessageObject.setLastModified(null);
     jsonMessageObject.setLastAgent(null);
     jsonMessageObject.setStatus(null);
-    assertThrows(IOException.class, () -> jsonMessageHandler.toJsonString(jsonMessageObject));
+    assertThrows(InvalidJsonMessageException.class,
+        () -> jsonMessageHandler.toJsonString(jsonMessageObject));
   }
 }
