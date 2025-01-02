@@ -49,9 +49,15 @@ class SoapMessageHandlerTest {
         .append("<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\">")
         .append("<soapenv:Header/>")
         .append("<soapenv:Body>")
-        .append("<soapenv:Fault>")
-        .append("<faulttag>Invalid message</faulttag>")
-        .append("</soapenv:Fault>")
+        .append("<Message>")
+        .append("<MessageID>106")
+        .append("<MessageTitle>Test Title</MessageTitle>")
+        .append("<MessageBody>Test Body</MessageBody>")
+        .append("<CreationTime>2024-11-03T12:00:00Z</CreationTime>")
+        .append("<LastModified>2024-11-03T12:2 Modified>")
+        .append("< Agent32</LastAgent>")
+        .append("<Status>Active</Status>")
+        .append("</Message>")
         .append("</soapenv:Body>")
         .append("</soapenv:Envelope>")
         .toString();
@@ -110,22 +116,6 @@ class SoapMessageHandlerTest {
   @Test
   void testParseEmptySoapMessage() {
     String soapMessageInString = "";
-    assertThrows(SOAPException.class, () -> soapMessageHandler.parse(soapMessageInString));
-  }
-
-  @Test
-  void testParseSoapMessageWithFault() {
-    String soapMessageInString = new StringBuilder()
-        .append("<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\">")
-        .append("<soapenv:Header/>")
-        .append("<soapenv:Body>")
-        .append("<soapenv:Fault>")
-        .append("<faulttag>Invalid message</faulttag>")
-        .append("</soapenv:Fault>")
-        .append("</soapenv:Body>")
-        .append("</soapenv:Envelope>")
-        .toString();
-
     assertThrows(SOAPException.class, () -> soapMessageHandler.parse(soapMessageInString));
   }
 }

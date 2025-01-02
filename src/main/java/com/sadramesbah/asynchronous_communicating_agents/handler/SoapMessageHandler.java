@@ -43,9 +43,10 @@ public class SoapMessageHandler {
       logger.info("Parsed SOAP message successfully. MessageID: {}, Agent: {}",
           innerXmlMessage.getMessageId(), innerXmlMessage.getLastAgent());
       return soapMessageObject;
-    } catch (SOAPException | IOException exception) {
-      logger.error("Error parsing SOAP message: {}", exception.getMessage(), exception);
-      throw exception;
+    } catch (SOAPException soapException) {
+      throw new SOAPException("Error parsing SOAP message due to SOAPException.", soapException);
+    } catch (IOException ioException) {
+      throw new IOException("Error parsing SOAP message due to IOException.", ioException);
     }
   }
 
@@ -59,9 +60,12 @@ public class SoapMessageHandler {
     try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
       soapMessageObject.writeTo(outputStream);
       return outputStream.toString(StandardCharsets.UTF_8);
-    } catch (SOAPException | IOException exception) {
-      logger.error("Error converting SOAPMessage to string: {}", exception.getMessage(), exception);
-      throw exception;
+    } catch (SOAPException soapException) {
+      throw new SOAPException("Error converting SOAPMessage to string due to SOAPException.",
+          soapException);
+    } catch (IOException ioException) {
+      throw new IOException("Error converting SOAPMessage to string due to IOException.",
+          ioException);
     }
   }
 
@@ -70,19 +74,20 @@ public class SoapMessageHandler {
     SOAPBody body = soapMessageObject.getSOAPBody();
     if (body == null || body.getFault() != null) {
       logger.warn("SOAP body is invalid or contains a fault.");
-      throw new SOAPException("Invalid SOAP message structure.");
+      throw new SOAPException("Invalid SOAP message structure because of SOAP body fault.");
     }
 
     Node messageNode = (Node) body.getElementsByTagNameNS("*", "Message").item(0);
     if (messageNode == null) {
       logger.warn("Message element is missing in SOAP body.");
-      throw new SOAPException("Invalid SOAP message structure.");
+      throw new SOAPException("Invalid SOAP message structure because of missing message element.");
     }
 
     XmlMessage innerXmlMessage = extractInnerXmlMessage(soapMessageObject);
     if (innerXmlMessage == null || isInvalidXmlMessage(innerXmlMessage)) {
       logger.warn("Invalid inner XML structure in SOAP message.");
-      throw new SOAPException("Invalid SOAP message structure.");
+      throw new SOAPException(
+          "Invalid SOAP message structure because of invalid inner XML message.");
     }
   }
 
@@ -92,9 +97,8 @@ public class SoapMessageHandler {
       SOAPBody body = soapMessage.getSOAPBody();
       Node messageNode = (Node) body.getElementsByTagNameNS("*", "Message").item(0);
       return (XmlMessage) unmarshaller.unmarshal(messageNode);
-    } catch (JAXBException exception) {
-      logger.error("Error extracting inner XML message: {}", exception.getMessage(), exception);
-      throw new SOAPException("Error extracting inner XML message.", exception);
+    } catch (JAXBException jaxbException) {
+      throw new SOAPException("Error extracting inner XML message.", jaxbException);
     }
   }
 
