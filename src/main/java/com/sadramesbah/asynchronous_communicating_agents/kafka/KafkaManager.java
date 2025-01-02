@@ -2,7 +2,6 @@ package com.sadramesbah.asynchronous_communicating_agents.kafka;
 
 import org.apache.kafka.clients.admin.*;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.util.concurrent.ExecutionException;
 import org.slf4j.Logger;
@@ -60,8 +59,11 @@ public class KafkaManager {
       try {
         adminClient.createTopics(Collections.singleton(newTopic)).all().get();
         logger.info("Topic created: {}", topicName);
-      } catch (InterruptedException | ExecutionException e) {
-        logger.error("Failed to create topic: {}", topicName, e);
+      } catch (InterruptedException exception) {
+        Thread.currentThread().interrupt();
+        logger.error("Failed to create topic {} with InterruptedException: ", topicName, exception);
+      } catch (ExecutionException exception) {
+        logger.error("Failed to create topic {} with ExecutionException: ", topicName, exception);
       }
     } else {
       logger.info("Topic {} already exists.", topicName);
@@ -72,8 +74,11 @@ public class KafkaManager {
     try {
       adminClient.deleteTopics(Collections.singleton(topicName)).all().get();
       logger.info("Topic deleted: {}", topicName);
-    } catch (InterruptedException | ExecutionException e) {
-      logger.error("Failed to delete topic: {}", topicName, e);
+    } catch (InterruptedException exception) {
+      Thread.currentThread().interrupt();
+      logger.error("Failed to delete topic {} with InterruptedException: ", topicName, exception);
+    } catch (ExecutionException exception) {
+      logger.error("Failed to delete topic {} with ExecutionException: ", topicName, exception);
     }
   }
 
@@ -83,8 +88,11 @@ public class KafkaManager {
           .names().get();
       adminClient.deleteTopics(topics).all().get();
       logger.info("All topics deleted: {}", topics);
-    } catch (InterruptedException | ExecutionException e) {
-      logger.error("Failed to delete all topics", e);
+    } catch (InterruptedException exception) {
+      Thread.currentThread().interrupt();
+      logger.error("Failed to delete all topics with InterruptedException: ", exception);
+    } catch (ExecutionException exception) {
+      logger.error("Failed to delete all topics with ExecutionException: ", exception);
     }
   }
 
@@ -95,10 +103,15 @@ public class KafkaManager {
       boolean exists = topics.contains(topicName);
       logger.info("Topic {} exists: {}", topicName, exists);
       return exists;
-    } catch (InterruptedException | ExecutionException e) {
-      logger.error("Failed to check if topic exists: {}", topicName, e);
-      return false;
+    } catch (InterruptedException exception) {
+      Thread.currentThread().interrupt();
+      logger.error("Failed to check if topic {} exists with InterruptedException: ", topicName,
+          exception);
+    } catch (ExecutionException exception) {
+      logger.error("Failed to check if topic {} exists with ExecutionException: ", topicName,
+          exception);
     }
+    return false;
   }
 
   public Set<String> listTopics() {
@@ -107,10 +120,13 @@ public class KafkaManager {
           .names().get();
       logger.info("List of topics: {}", topics);
       return topics;
-    } catch (InterruptedException | ExecutionException e) {
-      logger.error("Failed to list topics", e);
-      return Collections.emptySet();
+    } catch (InterruptedException exception) {
+      Thread.currentThread().interrupt();
+      logger.error("Failed to list all topics with InterruptedException: ", exception);
+    } catch (ExecutionException exception) {
+      logger.error("Failed to list all topics with ExecutionException: ", exception);
     }
+    return Collections.emptySet();
   }
 
   public void closeAdminClient() {
