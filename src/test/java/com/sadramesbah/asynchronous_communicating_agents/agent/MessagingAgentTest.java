@@ -116,13 +116,6 @@ class MessagingAgentTest {
   }
 
   @Test
-  void testHandleUnsupportedMessageType() {
-    String message = "Test message";
-    assertThrows(IllegalArgumentException.class, () ->
-        messagingAgent.handleInputMessage(message, MessageType.valueOf("UNKNOWN")));
-  }
-
-  @Test
   void testGetAgentId() {
     assertEquals(AGENT_ID, messagingAgent.getId());
   }

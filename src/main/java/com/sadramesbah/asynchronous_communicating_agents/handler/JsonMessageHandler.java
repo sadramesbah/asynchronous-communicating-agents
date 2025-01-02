@@ -1,5 +1,6 @@
 package com.sadramesbah.asynchronous_communicating_agents.handler;
 
+import com.sadramesbah.asynchronous_communicating_agents.exception.InvalidJsonMessageException;
 import com.sadramesbah.asynchronous_communicating_agents.message.JsonMessage;
 import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -22,14 +23,15 @@ public class JsonMessageHandler {
   }
 
   // parses JSON message in string format and converts it to JsonMessage object
-  public JsonMessage parse(String jsonMessageInString) throws JsonProcessingException {
+  public JsonMessage parse(String jsonMessageInString)
+      throws JsonProcessingException, InvalidJsonMessageException {
     logger.info("Parsing JSON message from string.");
     JsonMessage jsonMessageObject = objectMapper.readValue(jsonMessageInString, JsonMessage.class);
     if (isInvalidJsonMessage(jsonMessageObject)) {
       logger.warn("Invalid JSON message structure occurred while parsing. MessageID: {}, Agent: {}",
           jsonMessageObject.getMessageId(), jsonMessageObject.getLastAgent());
-      throw new JsonProcessingException("Invalid JSON message") {
-      };
+      throw new InvalidJsonMessageException(
+          "Invalid JSON message structure occurred while parsing.");
     }
     logger.info("Parsed JSON message successfully. MessageID: {}, Agent: {}",
         jsonMessageObject.getMessageId(), jsonMessageObject.getLastAgent());
@@ -37,15 +39,16 @@ public class JsonMessageHandler {
   }
 
   // converts JsonMessage object to JSON message in string format
-  public String toJsonString(JsonMessage jsonMessageObject) throws JsonProcessingException {
+  public String toJsonString(JsonMessage jsonMessageObject)
+      throws InvalidJsonMessageException, JsonProcessingException {
     logger.info("Converting JsonMessage object to JSON string. MessageID: {}, Agent: {}",
         jsonMessageObject.getMessageId(), jsonMessageObject.getLastAgent());
     if (isInvalidJsonMessage(jsonMessageObject)) {
       logger.warn(
           "Invalid JSON message structure occurred while converting to string. MessageID: {}, Agent: {}",
           jsonMessageObject.getMessageId(), jsonMessageObject.getLastAgent());
-      throw new JsonProcessingException("Invalid JSON message") {
-      };
+      throw new InvalidJsonMessageException(
+          "Invalid JSON message structure occurred while converting to string.");
     }
     return objectMapper.writeValueAsString(jsonMessageObject);
   }
