@@ -1,5 +1,6 @@
 package com.sadramesbah.asynchronous_communicating_agents.agent;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sadramesbah.asynchronous_communicating_agents.handler.JsonMessageHandler;
 import com.sadramesbah.asynchronous_communicating_agents.handler.SoapMessageHandler;
 import com.sadramesbah.asynchronous_communicating_agents.handler.XmlMessageHandler;
@@ -32,18 +33,16 @@ public class MessagingAgent {
 
   // handles the input message based on message type
   public String handleInputMessage(String inputMessage, MessageType inputMessageType)
-      throws Exception {
+      throws JAXBException, SOAPException, IOException {
     return switch (inputMessageType) {
       case JSON -> updateJsonMessage(jsonHandler.parse(inputMessage));
       case XML -> updateXmlMessage(xmlHandler.parse(inputMessage));
       case SOAP -> updateSoapMessage(soapHandler.parse(inputMessage));
-      default ->
-          throw new IllegalArgumentException("Unsupported message type: " + inputMessageType);
     };
   }
 
   // updates the Json message attributes and returns the updated Json message in String format
-  private String updateJsonMessage(JsonMessage jsonMessageObject) throws Exception {
+  private String updateJsonMessage(JsonMessage jsonMessageObject) throws JsonProcessingException {
     return jsonHandler.toJsonString((JsonMessage) updateMessageAttributes(jsonMessageObject));
   }
 
