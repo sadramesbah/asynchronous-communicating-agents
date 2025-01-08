@@ -12,6 +12,10 @@ import static org.junit.jupiter.api.Assertions.*;
 class XmlMessageHandlerTest {
 
   private XmlMessageHandler xmlMessageHandler;
+  private static final String ACTIVE_STATUS = "Active";
+  private static final String MESSAGE_TITLE = "TestTitle";
+  private static final String MESSAGE_BODY = "TestBody";
+  private static final String LAST_AGENT_ID = "Agent-32";
 
   @BeforeEach
   void setUp() throws JAXBException {
@@ -23,19 +27,19 @@ class XmlMessageHandlerTest {
     String xmlInString =
         "<Message><MessageID>14</MessageID><MessageTitle>TestTitle</MessageTitle>"
             + "<MessageBody>TestBody</MessageBody><CreationTime>2024-10-10T10:25:00Z</CreationTime>"
-            + "<LastModified>2024-10-10T11:45:00Z</LastModified><LastAgent>Agent32</LastAgent>"
+            + "<LastModified>2024-10-10T11:45:00Z</LastModified><LastAgent>Agent-32</LastAgent>"
             + "<Status>Active</Status></Message>";
     XmlMessage xmlMessageObject = xmlMessageHandler.parse(xmlInString);
     assertNotNull(xmlMessageObject);
     assertEquals(14, xmlMessageObject.getMessageId());
-    assertEquals("TestTitle", xmlMessageObject.getMessageTitle());
-    assertEquals("TestBody", xmlMessageObject.getMessageBody());
+    assertEquals(MESSAGE_TITLE, xmlMessageObject.getMessageTitle());
+    assertEquals(MESSAGE_BODY, xmlMessageObject.getMessageBody());
     assertEquals(Timestamp.from(Instant.parse("2024-10-10T10:25:00Z")),
         xmlMessageObject.getCreationTime());
     assertEquals(Timestamp.from(Instant.parse("2024-10-10T11:45:00Z")),
         xmlMessageObject.getLastModified());
-    assertEquals("Agent32", xmlMessageObject.getLastAgent());
-    assertEquals("Active", xmlMessageObject.getStatus());
+    assertEquals(LAST_AGENT_ID, xmlMessageObject.getLastAgent());
+    assertEquals(ACTIVE_STATUS, xmlMessageObject.getStatus());
   }
 
   @Test
@@ -53,7 +57,7 @@ class XmlMessageHandlerTest {
     String xml =
         "<Message><MessageID>14</MessageID><MessageTitle>null</MessageTitle>"
             + "<MessageBody></MessageBody><CreationTime>2024-10-10T10:25:00Z</CreationTime>"
-            + "<LastModified>2024-10-10T11:45:00Z</LastModified><LastAgent>Agent32</LastAgent>"
+            + "<LastModified>2024-10-10T11:45:00Z</LastModified><LastAgent>Agent-32</LastAgent>"
             + "<Status>Active</Status></Message>";
     assertThrows(JAXBException.class, () -> xmlMessageHandler.parse(xml));
   }
@@ -62,18 +66,18 @@ class XmlMessageHandlerTest {
   void testConvertingXmlObjectToString() throws JAXBException {
     XmlMessage xmlMessageObject = new XmlMessage();
     xmlMessageObject.setMessageId(14);
-    xmlMessageObject.setMessageTitle("TestTitle");
-    xmlMessageObject.setMessageBody("TestBody");
+    xmlMessageObject.setMessageTitle(MESSAGE_TITLE);
+    xmlMessageObject.setMessageBody(MESSAGE_BODY);
     xmlMessageObject.setCreationTime(Timestamp.from(Instant.now()));
     xmlMessageObject.setLastModified(Timestamp.from(Instant.now()));
-    xmlMessageObject.setLastAgent("Agent32");
-    xmlMessageObject.setStatus("Active");
+    xmlMessageObject.setLastAgent(LAST_AGENT_ID);
+    xmlMessageObject.setStatus(ACTIVE_STATUS);
     String xmlInString = xmlMessageHandler.toXmlString(xmlMessageObject);
     assertNotNull(xmlInString);
     assertTrue(xmlInString.contains("<MessageID>14</MessageID>"));
     assertTrue(xmlInString.contains("<MessageTitle>TestTitle</MessageTitle>"));
     assertTrue(xmlInString.contains("<MessageBody>TestBody</MessageBody>"));
-    assertTrue(xmlInString.contains("<LastAgent>Agent32</LastAgent>"));
+    assertTrue(xmlInString.contains("<LastAgent>Agent-32</LastAgent>"));
     assertTrue(xmlInString.contains("<Status>Active</Status>"));
   }
 
@@ -81,12 +85,12 @@ class XmlMessageHandlerTest {
   void testIsInvalid() {
     XmlMessage validXmlMessageObject = new XmlMessage();
     validXmlMessageObject.setMessageId(14);
-    validXmlMessageObject.setMessageTitle("TestTitle");
-    validXmlMessageObject.setMessageBody("TestBody");
+    validXmlMessageObject.setMessageTitle(MESSAGE_TITLE);
+    validXmlMessageObject.setMessageBody(MESSAGE_BODY);
     validXmlMessageObject.setCreationTime(Timestamp.from(Instant.now()));
     validXmlMessageObject.setLastModified(Timestamp.from(Instant.now()));
-    validXmlMessageObject.setLastAgent("Agent32");
-    validXmlMessageObject.setStatus("Active");
+    validXmlMessageObject.setLastAgent(LAST_AGENT_ID);
+    validXmlMessageObject.setStatus(ACTIVE_STATUS);
     assertFalse(xmlMessageHandler.isInvalidXmlMessage(validXmlMessageObject));
 
     XmlMessage invalidXmlMessageObject = new XmlMessage();
@@ -106,19 +110,19 @@ class XmlMessageHandlerTest {
         "<Message><MessageID>14</MessageID><MessageTitle>TestTitle</MessageTitle>"
             + "<MessageBody>TestBody</MessageBody><ExtraField>ExtraValue</ExtraField>"
             + "<CreationTime>2024-10-10T10:25:00Z</CreationTime>"
-            + "<LastModified>2024-10-10T11:45:00Z</LastModified><LastAgent>Agent32</LastAgent>"
+            + "<LastModified>2024-10-10T11:45:00Z</LastModified><LastAgent>Agent-32</LastAgent>"
             + "<Status>Active</Status></Message>";
     XmlMessage xmlMessageObject = xmlMessageHandler.parse(xmlInString);
     assertNotNull(xmlMessageObject);
     assertEquals(14, xmlMessageObject.getMessageId());
-    assertEquals("TestTitle", xmlMessageObject.getMessageTitle());
-    assertEquals("TestBody", xmlMessageObject.getMessageBody());
+    assertEquals(MESSAGE_TITLE, xmlMessageObject.getMessageTitle());
+    assertEquals(MESSAGE_BODY, xmlMessageObject.getMessageBody());
     assertEquals(Timestamp.from(Instant.parse("2024-10-10T10:25:00Z")),
         xmlMessageObject.getCreationTime());
     assertEquals(Timestamp.from(Instant.parse("2024-10-10T11:45:00Z")),
         xmlMessageObject.getLastModified());
-    assertEquals("Agent32", xmlMessageObject.getLastAgent());
-    assertEquals("Active", xmlMessageObject.getStatus());
+    assertEquals(LAST_AGENT_ID, xmlMessageObject.getLastAgent());
+    assertEquals(ACTIVE_STATUS, xmlMessageObject.getStatus());
   }
 
   @Test

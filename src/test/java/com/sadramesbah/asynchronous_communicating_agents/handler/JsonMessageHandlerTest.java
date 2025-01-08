@@ -13,6 +13,10 @@ import static org.junit.jupiter.api.Assertions.*;
 class JsonMessageHandlerTest {
 
   private JsonMessageHandler jsonMessageHandler;
+  private static final String ACTIVE_STATUS = "Active";
+  private static final String MESSAGE_TITLE = "TestTitle";
+  private static final String MESSAGE_BODY = "TestBody";
+  private static final String LAST_AGENT_ID = "Agent-32";
 
   @BeforeEach
   void setUp() {
@@ -24,18 +28,18 @@ class JsonMessageHandlerTest {
     String jsonInString =
         "{\"MessageID\":14,\"MessageTitle\":\"TestTitle\",\"MessageBody\":\"TestBody\","
             + "\"CreationTime\":\"2024-10-10T10:25:00Z\",\"LastModified\":\"2024-10-10T11:45:00Z\""
-            + ",\"LastAgent\":\"Agent32\",\"Status\":\"Active\"}";
+            + ",\"LastAgent\":\"Agent-32\",\"Status\":\"Active\"}";
     JsonMessage jsonMessageObject = jsonMessageHandler.parse(jsonInString);
     assertNotNull(jsonMessageObject);
     assertEquals(14, jsonMessageObject.getMessageId());
-    assertEquals("TestTitle", jsonMessageObject.getMessageTitle());
-    assertEquals("TestBody", jsonMessageObject.getMessageBody());
+    assertEquals(MESSAGE_TITLE, jsonMessageObject.getMessageTitle());
+    assertEquals(MESSAGE_BODY, jsonMessageObject.getMessageBody());
     assertEquals(Timestamp.from(Instant.parse("2024-10-10T10:25:00Z")),
         jsonMessageObject.getCreationTime());
     assertEquals(Timestamp.from(Instant.parse("2024-10-10T11:45:00Z")),
         jsonMessageObject.getLastModified());
-    assertEquals("Agent32", jsonMessageObject.getLastAgent());
-    assertEquals("Active", jsonMessageObject.getStatus());
+    assertEquals(LAST_AGENT_ID, jsonMessageObject.getLastAgent());
+    assertEquals(ACTIVE_STATUS, jsonMessageObject.getStatus());
   }
 
   @Test
@@ -50,18 +54,18 @@ class JsonMessageHandlerTest {
   void testConvertingJsonObjectToString() throws IOException, InvalidJsonMessageException {
     JsonMessage jsonMessageObject = new JsonMessage();
     jsonMessageObject.setMessageId(14);
-    jsonMessageObject.setMessageTitle("TestTitle");
-    jsonMessageObject.setMessageBody("TestBody");
+    jsonMessageObject.setMessageTitle(MESSAGE_TITLE);
+    jsonMessageObject.setMessageBody(MESSAGE_BODY);
     jsonMessageObject.setCreationTime(new Timestamp(System.currentTimeMillis()));
     jsonMessageObject.setLastModified(new Timestamp(System.currentTimeMillis()));
-    jsonMessageObject.setLastAgent("Agent32");
-    jsonMessageObject.setStatus("Active");
+    jsonMessageObject.setLastAgent(LAST_AGENT_ID);
+    jsonMessageObject.setStatus(ACTIVE_STATUS);
     String jsonInString = jsonMessageHandler.toJsonString(jsonMessageObject);
     assertNotNull(jsonInString);
     assertTrue(jsonInString.contains("\"MessageID\":1"));
     assertTrue(jsonInString.contains("\"MessageTitle\":\"TestTitle\""));
     assertTrue(jsonInString.contains("\"MessageBody\":\"TestBody\""));
-    assertTrue(jsonInString.contains("\"LastAgent\":\"Agent32\""));
+    assertTrue(jsonInString.contains("\"LastAgent\":\"Agent-32\""));
     assertTrue(jsonInString.contains("\"Status\":\"Active\""));
 
   }
@@ -70,12 +74,12 @@ class JsonMessageHandlerTest {
   void testIsInvalid() {
     JsonMessage validJsonMessageObject = new JsonMessage();
     validJsonMessageObject.setMessageId(14);
-    validJsonMessageObject.setMessageTitle("TestTitle");
-    validJsonMessageObject.setMessageBody("TestBody");
+    validJsonMessageObject.setMessageTitle(MESSAGE_TITLE);
+    validJsonMessageObject.setMessageBody(MESSAGE_BODY);
     validJsonMessageObject.setCreationTime(new Timestamp(System.currentTimeMillis()));
     validJsonMessageObject.setLastModified(new Timestamp(System.currentTimeMillis()));
-    validJsonMessageObject.setLastAgent("Agent32");
-    validJsonMessageObject.setStatus("Active");
+    validJsonMessageObject.setLastAgent(LAST_AGENT_ID);
+    validJsonMessageObject.setStatus(ACTIVE_STATUS);
     assertFalse(jsonMessageHandler.isInvalidJsonMessage(validJsonMessageObject));
 
     JsonMessage invalidJsonMessageObject = new JsonMessage();
@@ -94,19 +98,19 @@ class JsonMessageHandlerTest {
     String jsonInString =
         "{\"MessageID\":14,\"MessageTitle\":\"TestTitle\",\"MessageBody\":\"TestBody\","
             + "\"ExtraField\":\"ExtraValue\",\"CreationTime\":\"2024-10-10T10:25:00Z\","
-            + "\"LastModified\":\"2024-10-10T11:45:00Z\",\"LastAgent\":\"Agent32\","
+            + "\"LastModified\":\"2024-10-10T11:45:00Z\",\"LastAgent\":\"Agent-32\","
             + "\"Status\":\"Active\"}";
     JsonMessage jsonMessageObject = jsonMessageHandler.parse(jsonInString);
     assertNotNull(jsonMessageObject);
     assertEquals(14, jsonMessageObject.getMessageId());
-    assertEquals("TestTitle", jsonMessageObject.getMessageTitle());
-    assertEquals("TestBody", jsonMessageObject.getMessageBody());
+    assertEquals(MESSAGE_TITLE, jsonMessageObject.getMessageTitle());
+    assertEquals(MESSAGE_BODY, jsonMessageObject.getMessageBody());
     assertEquals(Timestamp.from(Instant.parse("2024-10-10T10:25:00Z")),
         jsonMessageObject.getCreationTime());
     assertEquals(Timestamp.from(Instant.parse("2024-10-10T11:45:00Z")),
         jsonMessageObject.getLastModified());
-    assertEquals("Agent32", jsonMessageObject.getLastAgent());
-    assertEquals("Active", jsonMessageObject.getStatus());
+    assertEquals(LAST_AGENT_ID, jsonMessageObject.getLastAgent());
+    assertEquals(ACTIVE_STATUS, jsonMessageObject.getStatus());
   }
 
   @Test
