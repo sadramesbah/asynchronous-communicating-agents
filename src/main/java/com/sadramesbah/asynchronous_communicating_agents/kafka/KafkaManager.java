@@ -1,6 +1,7 @@
 package com.sadramesbah.asynchronous_communicating_agents.kafka;
 
 import org.apache.kafka.clients.admin.*;
+import org.apache.kafka.common.config.ConfigResource;
 import org.springframework.beans.factory.annotation.Value;
 import javax.annotation.PostConstruct;
 import java.util.concurrent.ExecutionException;
@@ -11,6 +12,9 @@ import java.net.Socket;
 import java.util.Collections;
 import java.util.Properties;
 import java.util.Set;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.Collection;
 
 public class KafkaManager {
 
@@ -23,14 +27,16 @@ public class KafkaManager {
   @Value("${default.kafka.zookeeper.port}")
   private int defaultZookeeperPort;
 
+  // constructor to create an AdminClient instance
   public KafkaManager(@Value("${kafka.bootstrap.server}") String bootstrapServer) {
     Properties config = new Properties();
     config.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServer);
     this.adminClient = AdminClient.create(config);
   }
 
+  // checks if Zookeeper and Kafka servers are active
   @PostConstruct
-  public void checkServers() {
+  public void checkServersStatus() {
     if (isServerRunning(defaultZookeeperPort)) {
       logger.info("Zookeeper is running.");
     } else {
@@ -45,14 +51,16 @@ public class KafkaManager {
     }
   }
 
+  // checks if a server is running on the provided port
   private boolean isServerRunning(int port) {
     try (Socket socket = new Socket("localhost", port)) {
       return true;
-    } catch (IOException e) {
+    } catch (IOException ioException) {
       return false;
     }
   }
 
+  // creates a new topic
   public void createTopic(String topicName, int numPartitions, short replicationFactor) {
     if (!topicExists(topicName)) {
       NewTopic newTopic = new NewTopic(topicName, numPartitions, replicationFactor);
@@ -72,6 +80,7 @@ public class KafkaManager {
     }
   }
 
+  // deletes a topic
   public void deleteTopic(String topicName) {
     try {
       adminClient.deleteTopics(Collections.singleton(topicName)).all().get();
@@ -85,6 +94,7 @@ public class KafkaManager {
     }
   }
 
+  // deletes all existing topics
   public void deleteAllTopics() {
     try {
       Set<String> topics = adminClient.listTopics(new ListTopicsOptions().listInternal(false))
@@ -99,6 +109,7 @@ public class KafkaManager {
     }
   }
 
+  // checks if a topic exists
   public boolean topicExists(String topicName) {
     try {
       Set<String> topics = adminClient.listTopics(new ListTopicsOptions().listInternal(false))
@@ -117,6 +128,7 @@ public class KafkaManager {
     return false;
   }
 
+  // lists all existing topics
   public Set<String> listTopics() {
     try {
       Set<String> topics = adminClient.listTopics(new ListTopicsOptions().listInternal(false))
@@ -132,6 +144,104 @@ public class KafkaManager {
     return Collections.emptySet();
   }
 
+  // updates the configuration of an existing topic
+  public void updateTopicConfig(String topicName, Map<String, String> configs) {
+    try {
+      ConfigResource configResource = new ConfigResource(ConfigResource.Type.TOPIC, topicName);
+      Collection<AlterConfigOp> configOps = configs.entrySet().stream()
+          .map(entry -> new AlterConfigOp(new ConfigEntry(entry.getKey(), entry.getValue()),
+              AlterConfigOp.OpType.SET))
+          .toList();
+      adminClient.incrementalAlterConfigs(Collections.singletonMap(configResource, configOps)).all()
+          .get();
+      logger.info("Updated configuration for topic: {}", topicName);
+    } catch (InterruptedException intException) {
+      Thread.currentThread().interrupt();
+      logger.error("Failed to update configuration for topic {} with InterruptedException",
+          topicName,
+          intException);
+    } catch (ExecutionException exeException) {
+      logger.error("Failed to update configuration for topic {} with ExecutionException", topicName,
+          exeException);
+    }
+  }
+
+  // gets the details of a specific topic
+  public TopicDescription describeTopic(String topicName) {
+    try {
+      TopicDescription description = adminClient.describeTopics(Collections.singleton(topicName))
+          .allTopicNames().get().get(topicName);
+      logger.info("Description for topic {}: {}", topicName, description);
+      return description;
+    } catch (InterruptedException intException) {
+      Thread.currentThread().interrupt();
+      logger.error("Failed to describe topic {} with InterruptedException", topicName,
+          intException);
+    } catch (ExecutionException exeException) {
+      logger.error("Failed to describe topic {} with ExecutionException", topicName, exeException);
+    }
+    return null;
+  }
+
+  // gets the details of the Kafka cluster
+  public DescribeClusterResult describeCluster() {
+    DescribeClusterResult clusterDescription = adminClient.describeCluster();
+    logger.info("Cluster description: {}", clusterDescription);
+    return clusterDescription;
+  }
+
+  // lists all existing consumer groups
+  public Set<String> listConsumerGroups() {
+    try {
+      Set<String> consumerGroups = adminClient.listConsumerGroups().all().get().stream()
+          .map(ConsumerGroupListing::groupId)
+          .collect(Collectors.toSet());
+      logger.info("List of consumer groups: {}", consumerGroups);
+      return consumerGroups;
+    } catch (InterruptedException intException) {
+      Thread.currentThread().interrupt();
+      logger.error("Failed to list consumer groups with InterruptedException", intException);
+    } catch (ExecutionException exeException) {
+      logger.error("Failed to list consumer groups with ExecutionException", exeException);
+    }
+    return Collections.emptySet();
+  }
+
+  // gets the details of a specific consumer group
+  public ConsumerGroupDescription describeConsumerGroup(String groupId) {
+    try {
+      ConsumerGroupDescription description = adminClient.describeConsumerGroups(
+          Collections.singleton(groupId)).all().get().get(groupId);
+      logger.info("Description for consumer group {}: {}", groupId, description);
+      return description;
+    } catch (InterruptedException intException) {
+      Thread.currentThread().interrupt();
+      logger.error("Failed to describe consumer group {} with InterruptedException", groupId,
+          intException);
+    } catch (ExecutionException exeException) {
+      logger.error("Failed to describe consumer group {} with ExecutionException", groupId,
+          exeException);
+    }
+    return null;
+  }
+
+  // adds partitions to an existing topic
+  public void addPartitionsToTopic(String topicName, int numPartitions) {
+    try {
+      adminClient.createPartitions(
+          Collections.singletonMap(topicName, NewPartitions.increaseTo(numPartitions))).all().get();
+      logger.info("Added partitions to topic: {}", topicName);
+    } catch (InterruptedException intException) {
+      Thread.currentThread().interrupt();
+      logger.error("Failed to add partitions to topic {} with InterruptedException", topicName,
+          intException);
+    } catch (ExecutionException exeException) {
+      logger.error("Failed to add partitions to topic {} with ExecutionException", topicName,
+          exeException);
+    }
+  }
+
+  // closes the AdminClient instance
   public void closeAdminClient() {
     adminClient.close();
     logger.info("AdminClient closed");
