@@ -61,12 +61,13 @@ public class KafkaManager {
   }
 
   // creates a new topic
-  public void createTopic(String topicName, int numPartitions, short replicationFactor) {
+  public boolean createTopic(String topicName, int numPartitions, short replicationFactor) {
     if (!topicExists(topicName)) {
       NewTopic newTopic = new NewTopic(topicName, numPartitions, replicationFactor);
       try {
         adminClient.createTopics(Collections.singleton(newTopic)).all().get();
         logger.info("Topic created: {}", topicName);
+        return true;
       } catch (InterruptedException intException) {
         Thread.currentThread().interrupt();
         logger.error("Failed to create topic {} with InterruptedException: ", topicName,
@@ -78,13 +79,15 @@ public class KafkaManager {
     } else {
       logger.info("Topic {} already exists.", topicName);
     }
+    return false;
   }
 
   // deletes a topic
-  public void deleteTopic(String topicName) {
+  public boolean deleteTopic(String topicName) {
     try {
       adminClient.deleteTopics(Collections.singleton(topicName)).all().get();
       logger.info("Topic deleted: {}", topicName);
+      return true;
     } catch (InterruptedException intException) {
       Thread.currentThread().interrupt();
       logger.error("Failed to delete topic {} with InterruptedException: ", topicName,
@@ -92,6 +95,7 @@ public class KafkaManager {
     } catch (ExecutionException exeException) {
       logger.error("Failed to delete topic {} with ExecutionException: ", topicName, exeException);
     }
+    return false;
   }
 
   // deletes all existing topics
