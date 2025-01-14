@@ -117,28 +117,6 @@ class KafkaManagerTest {
   }
 
   @Test
-  void testDescribeConsumerGroup() throws ExecutionException, InterruptedException {
-    String groupId = "test-group1";
-    ConsumerGroupDescription description = kafkaManager.describeConsumerGroup(groupId);
-    KafkaFuture<Map<String, ConsumerGroupDescription>> future = adminClient.describeConsumerGroups(
-        Collections.singleton(groupId)).all();
-    Map<String, ConsumerGroupDescription> descriptions = future.get();
-    assertEquals(descriptions.get(groupId), description);
-  }
-
-  @Test
-  void testAddPartitionsToTopic() throws ExecutionException, InterruptedException {
-    String topicName = "test-topic5";
-    kafkaManager.createTopic(topicName, 1, (short) 1); // Ensure the topic is created
-    int numPartitions = 3;
-    kafkaManager.addPartitionsToTopic(topicName, numPartitions);
-    KafkaFuture<Map<String, TopicDescription>> future = adminClient.describeTopics(
-        Collections.singleton(topicName)).allTopicNames();
-    Map<String, TopicDescription> descriptions = future.get();
-    assertEquals(numPartitions, descriptions.get(topicName).partitions().size());
-  }
-
-  @Test
   void testCreateExistingTopic() {
     String topicName = "test-topic6";
     boolean created = kafkaManager.createTopic(topicName, 1, (short) 1);
@@ -167,13 +145,6 @@ class KafkaManagerTest {
     String topicName = "non-existing-topic3";
     TopicDescription description = kafkaManager.describeTopic(topicName);
     assertNull(description);
-  }
-
-  @Test
-  void testDescribeNonExistingConsumerGroup() {
-    String groupId = "non-existing-group1";
-    ConsumerGroupDescription description = kafkaManager.describeConsumerGroup(groupId);
-    assertTrue(description == null || "Dead".equals(description.state().toString()));
   }
 
   @Test

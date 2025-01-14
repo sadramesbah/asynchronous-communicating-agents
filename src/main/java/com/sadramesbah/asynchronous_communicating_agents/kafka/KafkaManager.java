@@ -211,24 +211,6 @@ public class KafkaManager {
     return Collections.emptySet();
   }
 
-  // gets the details of a specific consumer group
-  public ConsumerGroupDescription describeConsumerGroup(String groupId) {
-    try {
-      ConsumerGroupDescription description = adminClient.describeConsumerGroups(
-          Collections.singleton(groupId)).all().get().get(groupId);
-      logger.info("Description for consumer group {}: {}", groupId, description);
-      return description;
-    } catch (InterruptedException intException) {
-      Thread.currentThread().interrupt();
-      logger.error("Failed to describe consumer group {} with InterruptedException", groupId,
-          intException);
-    } catch (ExecutionException exeException) {
-      logger.error("Failed to describe consumer group {} with ExecutionException", groupId,
-          exeException);
-    }
-    return null;
-  }
-
   // adds partitions to an existing topic
   public void addPartitionsToTopic(String topicName, int numPartitions) {
     try {
