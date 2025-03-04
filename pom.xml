@@ -126,7 +126,7 @@
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
-      <version>1.5.16</version>
+      <version>1.5.17</version>
     </dependency>
 
     <!-- Apache Commons IO: updated to the latest version to fix "CVE-2024-47554" vulnerability -->
