@@ -119,7 +119,7 @@
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-core</artifactId>
-      <version>1.5.17</version>
+      <version>1.5.18</version>
     </dependency>
 
     <!-- Logback Classic: updated to the latest version to address "CVE-2024-12798" and "CVE-2024-12801" vulnerabilities -->
