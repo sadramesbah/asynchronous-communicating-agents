@@ -119,14 +119,14 @@
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-core</artifactId>
-      <version>1.5.20</version>
+      <version>1.5.25</version>
     </dependency>
 
     <!-- Logback Classic: updated to the latest version to address "CVE-2024-12798" and "CVE-2024-12801" vulnerabilities -->
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
-      <version>1.5.20</version>
+      <version>1.5.25</version>
     </dependency>
 
     <!-- Apache Commons IO: updated to the latest version to fix "CVE-2024-47554" vulnerability -->
